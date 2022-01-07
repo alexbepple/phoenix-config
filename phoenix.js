@@ -25,3 +25,26 @@ const moveRightKey = new Key('right', [ 'cmd', 'option', 'shift' ], () => {
   const spaceIdx = getActiveSpaceIdx()
   moveFocusedWindowFromSpaceIdxToSpaceIdx(spaceIdx, spaceIdx+1)
 })
+
+
+//////////////////////
+
+const lastActivated = {}
+const touch = (app) => lastActivated[app.bundleIdentifier()] = new Date()
+const _getLastActivatedTsRaw = (app) => lastActivated[app.bundleIdentifier()]
+
+const startupTs = new Date()
+const getLastActivatedTs = (app) => Math.max(startupTs, _getLastActivatedTsRaw(app) || 0)
+const wasAppInactiveForLongTime = app => new Date() - getLastActivatedTs(app) > 300/*s*/ * 1000
+
+const hideAppIfUnused = app => {
+  if (!app.isActive() && !app.isHidden() && wasAppInactiveForLongTime(app)) {
+    app.hide()
+  }
+}
+
+const rememberWhenAppLastActivated = new Event('appDidActivate', touch)
+
+const timerThatHidesUnusedApps = Timer.every(15 /*s*/, () => {
+  App.all().forEach(hideAppIfUnused)
+})
