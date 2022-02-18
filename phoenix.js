@@ -43,8 +43,9 @@ const hideAppIfUnused = app => {
   }
 }
 
-const rememberWhenAppLastActivated = new Event('appDidActivate', touch)
+const touchActivatedApp = new Event('appDidActivate', touch)
 
-const timerThatHidesUnusedApps = Timer.every(15 /*s*/, () => {
-  App.all().forEach(hideAppIfUnused)
-})
+/* Avoid it disappearing immediately after switching away. */
+const touchActiveApp = Timer.every(15 /*s*/, () => touch(App.focused()))
+
+const hideUnusedApps = Timer.every(15 /*s*/, () => App.all().forEach(hideAppIfUnused))
