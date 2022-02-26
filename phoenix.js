@@ -1,13 +1,12 @@
 const getActiveSpaceIdx = () => Space.all().findIndex(x => x.isEqual(Space.active()))
 const mod = (a, n) => (a+n) % n
 
-const moveFocusedWindowFromSpaceIdxToSpaceIdx = (fromIdx, unboundedToIdx) => {
+const moveFocusedWindowFromSpaceIdxToSpaceIdx = (unboundedToIdx) => {
   const toIdx = mod(unboundedToIdx, Space.all().length)
-  Phoenix.log(`Moving focused window ${fromIdx} → ${toIdx}`)
+  Phoenix.log(`Moving focused window to space ${toIdx}`)
 
   const currentWindow = Window.focused()
-  Space.all()[toIdx].addWindows([currentWindow])
-  Space.all()[fromIdx].removeWindows([currentWindow])
+  Space.all()[toIdx].moveWindows([currentWindow])
   currentWindow.focus()
 }
 
@@ -17,13 +16,11 @@ const moveFocusedWindowFromSpaceIdxToSpaceIdx = (fromIdx, unboundedToIdx) => {
 https://github.com/kasper/phoenix/blob/master/docs/API.md#getting-started
 */
 const moveLeftKey = new Key('left', [ 'cmd', 'option', 'shift' ], () => {
-  const spaceIdx = getActiveSpaceIdx()
-  moveFocusedWindowFromSpaceIdxToSpaceIdx(spaceIdx, spaceIdx-1)
+  moveFocusedWindowFromSpaceIdxToSpaceIdx(getActiveSpaceIdx() - 1)
 })
 
 const moveRightKey = new Key('right', [ 'cmd', 'option', 'shift' ], () => {
-  const spaceIdx = getActiveSpaceIdx()
-  moveFocusedWindowFromSpaceIdxToSpaceIdx(spaceIdx, spaceIdx+1)
+  moveFocusedWindowFromSpaceIdxToSpaceIdx(getActiveSpaceIdx() + 1)
 })
 
 
